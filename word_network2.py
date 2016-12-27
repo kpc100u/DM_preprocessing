@@ -6,42 +6,17 @@ from Regemotest import sample_match
 reload(sys)  # Reload does the trick!
 sys.setdefaultencoding('UTF8')
 
-def minusNetworks(subjPath, objPath):
-	print "Processing ",subjPath
+def minusNetworks(word_list):
+	
+	# Get edges for the subjective graph
+    	edges1 = sample_match(word_list)
 
-    	# Get edges for the subjective graph
-    	edges1 = sample_match(subjPath,"emo")
-        '''print "subjective"
-        for edge in edges1:
-            print "%s %f"%(edge,edges1[edge])'''
-
-        # Get edges for the objective graph
-        edges2 = sample_match(objPath,"all")
-        '''print "objective"
-        for edge in edges2:
-            print "%s %f"%(edge,edges2[edge])'''
-
-        diffTh = 0.0;
         edges = {}
-        droped = {}
         for edge in edges1:
-            if edge in edges2:
-                value = edges1[edge] - edges2[edge] 
-                if(value >= diffTh):
-                    edges[edge] = value
-                else:
-                    #print "Drop this shared edge %s: %f"%(edge,value)
-                    droped[edge] = value
-            else:
-                if edges1[edge] >= diffTh:
-                    edges[edge] = edges1[edge]
-                else:
-                    #print "Drop this unique edge %s: %f"%(edge,edges1[edge])
-                    droped[edge] = edges1[edge]
-        
+                value = edges1[edge]
+                edges[edge] = value        
 
         sorted_edges = sorted(edges.items(), key=operator.itemgetter(1), reverse=True)
-        out = codecs.open("network/subjective","w", "utf-8-sig")
         words = {}
         netEdges = {}
         countWords = 0
@@ -56,16 +31,6 @@ def minusNetworks(subjPath, objPath):
                 words[tokens[1]] = countWords
             netEdge = unicode(words[tokens[0]]) + " " + unicode(words[tokens[1]])
             netEdges[netEdge] = value
-
-            out.write("%s\t%f\n"%(edge,value))
-        out.close
-
-        out = codecs.open("network/dropped","w", "utf-8-sig")
-        sorted_droped = sorted(droped.items(), key=operator.itemgetter(1))
-        for (edge, value) in sorted_droped:
-            print "%s\t%f"%(edge,value)
-            out.write("%s\t%f\n"%(edge,value))
-        out.close
 
         saveNetwork(words,netEdges)
 
@@ -237,4 +202,4 @@ def findEmotionWordsTriGram(pathEdges, pathNodes, pathPWs):
 #minusNetworks("Murmur/total/all", "Twitter/News/all")
 #minusNetworks("Murmur/total/moods/angry.json", "")
 #minusNetworks("network/emo","network/all")
-findEmotionWordsTriGram("network/minused.edges","network/minused.vertices","network/hws")
+#findEmotionWordsTriGram("network/minused.edges","network/minused.vertices","network/hws")
